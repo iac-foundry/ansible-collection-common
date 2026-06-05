@@ -1,0 +1,3 @@
+---
+common_service_user_enabled: true
+common_service_user_config: {}             # caller-supplied configuration map

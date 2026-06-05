@@ -1,0 +1,7 @@
+---
+- name: Scaffold convergence placeholder
+  ansible.builtin.debug:
+    msg: "Scaffold for tls_material: apply caller-supplied common configuration."
+  when: common_tls_material_enabled | bool
+  tags:
+    - tls_material

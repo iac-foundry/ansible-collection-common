@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: "service_user capability for common."
+    options:
+      common_service_user_enabled:
+        type: bool
+        default: true
+        description: Whether this capability is applied.
+      common_service_user_config:
+        type: dict
+        default: {}
+        description: Caller-supplied configuration map.

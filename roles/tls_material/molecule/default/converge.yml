@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Include blueprints.common.tls_material
+      ansible.builtin.include_role:
+        name: blueprints.common.tls_material

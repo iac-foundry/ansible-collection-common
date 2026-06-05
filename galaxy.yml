@@ -1,0 +1,20 @@
+---
+namespace: blueprints
+name: common
+version: 0.1.0
+readme: README.md
+authors:
+  - Platform Engineering
+description: "Shared, generic building blocks composed by platforms (no hidden dependencies)."
+license:
+  - MIT
+tags:
+  - infrastructure
+  - blueprints
+  - common
+repository: https://github.com/iac-foundry/ansible-collection-common
+dependencies: {}
+build_ignore:
+  - .github
+  - "*.tar.gz"
+  - extensions
