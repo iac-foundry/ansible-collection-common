@@ -1,0 +1,46 @@
+---
+# blueprints.common.hashicorp_repository
+#
+# Adds the official HashiCorp apt repository on Debian/Ubuntu.
+# Idempotent: skips the setup block if /etc/apt/sources.list.d/hashicorp.list
+# already exists.
+
+- name: Check whether the HashiCorp apt repository is already configured
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/hashicorp.list
+  register: _hashicorp_repo_list
+  changed_when: false
+  tags: [hashicorp_repository]
+
+- name: Configure HashiCorp apt repository
+  when: not _hashicorp_repo_list.stat.exists
+  become: true
+  tags: [hashicorp_repository]
+  block:
+    - name: Install prerequisites
+      ansible.builtin.apt:
+        name: "{{ hashicorp_repository_prereqs }}"
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Download and import HashiCorp GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg \
+          | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+      args:
+        executable: /bin/bash
+        creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+    - name: Add HashiCorp apt repository
+      ansible.builtin.shell: |
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+          https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+          | tee /etc/apt/sources.list.d/hashicorp.list
+      args:
+        executable: /bin/bash
+        creates: /etc/apt/sources.list.d/hashicorp.list
+
+    - name: Update apt cache after adding HashiCorp repository
+      ansible.builtin.apt:
+        update_cache: true

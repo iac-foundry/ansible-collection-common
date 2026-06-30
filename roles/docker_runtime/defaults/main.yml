@@ -1,0 +1,23 @@
+---
+# blueprints.common.docker_runtime defaults
+#
+# Installs Docker Engine from Docker's official apt repository on Debian/Ubuntu
+# and optionally the Python docker SDK (required by community.docker modules).
+# Architecture is always detected via dpkg --print-architecture rather than
+# ansible_architecture to avoid amd64/x86_64 translation errors on ARM hosts.
+
+# Package versions: "present" installs latest available; pin to a specific
+# version string (e.g. "5:27.0.3-1~ubuntu.24.04~noble") if you need a lock.
+docker_runtime_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+# Whether to install the Python docker SDK (needed for community.docker.docker_container).
+docker_runtime_install_python_sdk: true
+
+# Required for pip on newer Ubuntu/Debian that enforce externally-managed
+# environments. Set false only if installing into a virtualenv instead.
+docker_runtime_break_system_packages: true

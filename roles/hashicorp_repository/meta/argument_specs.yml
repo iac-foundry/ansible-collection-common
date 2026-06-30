@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: "Add the official HashiCorp apt repository on Debian/Ubuntu."
+    description:
+      - Configures apt to install packages from HashiCorp's upstream repository.
+      - Idempotent -- skips if /etc/apt/sources.list.d/hashicorp.list already exists.
+      - Package installation is left to the caller; this role only manages the repository.
+    options:
+      hashicorp_repository_prereqs:
+        type: list
+        elements: str
+        description: "Packages to install before adding the repository."
+        default: [gnupg, curl]

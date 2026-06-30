@@ -1,0 +1,74 @@
+---
+# blueprints.common.docker_runtime
+#
+# Installs Docker Engine from Docker's official apt repository on Debian/Ubuntu.
+# Idempotent: skips the install block if /usr/bin/docker already exists.
+
+- name: Check whether Docker Engine is already installed
+  ansible.builtin.stat:
+    path: /usr/bin/docker
+  register: _docker_runtime_binary
+  changed_when: false
+  tags: [docker_runtime]
+
+- name: Install Docker Engine from the official apt repository
+  when: not _docker_runtime_binary.stat.exists
+  become: true
+  tags: [docker_runtime]
+  block:
+    - name: Install apt prerequisites
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - python3-pip
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Create /etc/apt/keyrings directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Docker's official GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+
+    - name: Detect Debian architecture (dpkg avoids amd64/x86_64 translation bugs)
+      ansible.builtin.command: dpkg --print-architecture
+      register: _docker_runtime_arch
+      changed_when: false
+
+    - name: Add Docker apt repository
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [arch={{ _docker_runtime_arch.stdout }}
+          signed-by=/etc/apt/keyrings/docker.asc]
+          https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        state: present
+        filename: docker
+
+    - name: Install Docker Engine packages
+      ansible.builtin.apt:
+        name: "{{ docker_runtime_packages }}"
+        state: present
+        update_cache: true
+
+    - name: Enable and start the Docker daemon
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+
+- name: Install Python docker SDK (required by community.docker.docker_container)
+  ansible.builtin.pip:
+    name: docker
+    state: present
+    break_system_packages: "{{ docker_runtime_break_system_packages }}"
+  become: true
+  when: docker_runtime_install_python_sdk
+  tags: [docker_runtime]

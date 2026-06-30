@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: "Install Docker Engine from Docker's official apt repository."
+    description:
+      - Installs Docker CE from the upstream apt repository on Debian/Ubuntu.
+      - Idempotent -- skips the install block if the docker binary already exists.
+      - Optionally installs the Python docker SDK required by community.docker.docker_container.
+    options:
+      docker_runtime_packages:
+        type: list
+        elements: str
+        description: "Docker packages to install. Defaults to the full CE stack."
+      docker_runtime_install_python_sdk:
+        type: bool
+        default: true
+        description: "Install the Python docker SDK (pip install docker)."
+      docker_runtime_break_system_packages:
+        type: bool
+        default: true
+        description: "Pass --break-system-packages to pip (required on Ubuntu 24.04+)."

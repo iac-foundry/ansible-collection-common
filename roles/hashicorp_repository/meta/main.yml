@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  role_name: hashicorp_repository
+  author: Platform Engineering
+  description: "Add the official HashiCorp apt repository on Debian/Ubuntu."
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bookworm
+  galaxy_tags:
+    - blueprints
+    - hashicorp
+    - apt
+dependencies: []

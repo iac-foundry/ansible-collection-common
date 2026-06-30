@@ -1,0 +1,12 @@
+---
+# blueprints.common.hashicorp_repository defaults
+#
+# Adds the official HashiCorp apt repository so callers can install vault,
+# terraform, packer, consul, etc. via the system package manager.
+# The role is intentionally narrow: it only configures the repository.
+# Package installation is left to the caller.
+
+# Packages installed before adding the repo.
+hashicorp_repository_prereqs:
+  - gnupg
+  - curl
